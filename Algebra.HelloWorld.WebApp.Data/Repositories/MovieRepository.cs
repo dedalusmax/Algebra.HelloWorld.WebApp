@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Algebra.HelloWorld.WebApp.Data.Repositories;
 
-public class MovieRepository : IMovieRepository
+public class MovieRepository : IGenericRepository<Movie>
 {
     private readonly AppDbContext _context;
 
@@ -13,23 +13,23 @@ public class MovieRepository : IMovieRepository
         _context = context;
     }
 
-    public async Task<List<Movie>> GetMovies()
+    public async Task<List<Movie>> Get()
     {
         return await _context.Movies.ToListAsync();
     }
 
-    public async Task<Movie> GetMovie(int id)
+    public async Task<Movie> Get(int id)
     {
         return await _context.Movies.FindAsync(id);
     }
 
-    public async Task PutMovie(int id, Movie movie)
+    public async Task Put(int id, Movie movie)
     {
         _context.Entry(movie).State = EntityState.Modified;
         await _context.SaveChangesAsync();
     }
 
-    public async Task<Movie> PostMovie(Movie movie)
+    public async Task<Movie> Post(Movie movie)
     {
         _context.Movies.Add(movie);
         await _context.SaveChangesAsync();
@@ -37,7 +37,7 @@ public class MovieRepository : IMovieRepository
         return movie;
     }
 
-    public async Task DeleteMovie(int id)
+    public async Task Delete(int id)
     {
         var movie = await _context.Movies.FindAsync(id);
         if (movie != null)
@@ -47,7 +47,7 @@ public class MovieRepository : IMovieRepository
         }
     }
 
-    public bool MovieExists(int id)
+    public bool Exists(int id)
     {
         return _context.Movies.Any(e => e.Id == id);
     }

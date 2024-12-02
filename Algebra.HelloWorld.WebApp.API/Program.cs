@@ -1,5 +1,6 @@
 using Algebra.HelloWorld.WebApp.Data;
 using Algebra.HelloWorld.WebApp.Data.Abstractions;
+using Algebra.HelloWorld.WebApp.Data.Entities;
 using Algebra.HelloWorld.WebApp.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +18,8 @@ var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connStr));
 
-builder.Services.AddScoped<IMovieRepository, MovieRepository>();
+//builder.Services.AddScoped<IMovieRepository, MovieRepository>();
+builder.Services.AddScoped<IGenericRepository<Movie>, MovieRepository>();
 
 var app = builder.Build();
 

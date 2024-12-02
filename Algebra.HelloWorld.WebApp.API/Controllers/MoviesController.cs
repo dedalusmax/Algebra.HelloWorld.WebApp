@@ -7,13 +7,13 @@ namespace Algebra.HelloWorld.WebApp.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MoviesController(IMovieRepository repository) : ControllerBase
+    public class MoviesController(IGenericRepository<Movie> repository) : ControllerBase
     {
         // GET: api/Movies
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
         {
-            var result = await repository.GetMovies();
+            var result = await repository.Get();
             return (result.Count == 0 ? NoContent() : result);
         }
 
@@ -21,7 +21,7 @@ namespace Algebra.HelloWorld.WebApp.API.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Movie>> GetMovie(int id)
         {
-            var movie = await repository.GetMovie(id);
+            var movie = await repository.Get(id);
 
             if (movie == null)
             {
@@ -43,11 +43,11 @@ namespace Algebra.HelloWorld.WebApp.API.Controllers
 
             try
             {
-                await repository.PutMovie(id, movie);
+                await repository.Put(id, movie);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!repository.MovieExists(id))
+                if (!repository.Exists(id))
                 {
                     return NotFound();
                 }
@@ -65,7 +65,7 @@ namespace Algebra.HelloWorld.WebApp.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Movie>> PostMovie(Movie movie)
         {
-            movie = await repository.PostMovie(movie);
+            movie = await repository.Post(movie);
 
             return CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
         }
@@ -74,12 +74,12 @@ namespace Algebra.HelloWorld.WebApp.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMovie(int id)
         {
-            if (!repository.MovieExists(id))
+            if (!repository.Exists(id))
             {
                 return NotFound();
             }
 
-            await repository.DeleteMovie(id);
+            await repository.Delete(id);
 
             return NoContent();
         }
