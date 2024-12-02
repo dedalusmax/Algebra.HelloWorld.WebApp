@@ -1,4 +1,4 @@
-﻿using Algebra.HelloWorld.WebApp.Data;
+﻿using Algebra.HelloWorld.WebApp.Data.Abstractions;
 using Algebra.HelloWorld.WebApp.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,20 +7,13 @@ namespace Algebra.HelloWorld.WebApp.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MoviesController : ControllerBase
+    public class MoviesController(IMovieRepository repository) : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public MoviesController(AppDbContext context)
-        {
-            _context = context;
-        }
-
         // GET: api/Movies
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
         {
-            var result = await _context.Movies.ToListAsync();
+            var result = await repository.GetMovies();
             return (result.Count == 0 ? NoContent() : result);
         }
 
@@ -28,7 +21,7 @@ namespace Algebra.HelloWorld.WebApp.API.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Movie>> GetMovie(int id)
         {
-            var movie = await _context.Movies.FindAsync(id);
+            var movie = await repository.GetMovie(id);
 
             if (movie == null)
             {
@@ -48,15 +41,13 @@ namespace Algebra.HelloWorld.WebApp.API.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(movie).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await repository.PutMovie(id, movie);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!MovieExists(id))
+                if (!repository.MovieExists(id))
                 {
                     return NotFound();
                 }
@@ -74,8 +65,7 @@ namespace Algebra.HelloWorld.WebApp.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Movie>> PostMovie(Movie movie)
         {
-            _context.Movies.Add(movie);
-            await _context.SaveChangesAsync();
+            movie = await repository.PostMovie(movie);
 
             return CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
         }
@@ -84,21 +74,14 @@ namespace Algebra.HelloWorld.WebApp.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMovie(int id)
         {
-            var movie = await _context.Movies.FindAsync(id);
-            if (movie == null)
+            if (!repository.MovieExists(id))
             {
                 return NotFound();
             }
 
-            _context.Movies.Remove(movie);
-            await _context.SaveChangesAsync();
+            await repository.DeleteMovie(id);
 
             return NoContent();
-        }
-
-        private bool MovieExists(int id)
-        {
-            return _context.Movies.Any(e => e.Id == id);
         }
     }
 }
