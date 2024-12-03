@@ -7,13 +7,20 @@ namespace Algebra.HelloWorld.WebApp.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MoviesController(IGenericRepository<Movie> repository) : ControllerBase
+    public class MoviesController(IMovieRepository repository) : ControllerBase
     {
         // GET: api/Movies
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
         {
             var result = await repository.Get();
+            return (result.Count == 0 ? NoContent() : result);
+        }
+
+        [HttpGet("{name}/{ascendingOrder}/{recordsPerPage}")]
+        public async Task<ActionResult<IEnumerable<Movie>>> GetMoviesFiltered(string name, bool ascendingOrder, int page, int recordsPerPage)
+        {
+            var result = await repository.GetMoviesFiltered(name, ascendingOrder, page, recordsPerPage);
             return (result.Count == 0 ? NoContent() : result);
         }
 

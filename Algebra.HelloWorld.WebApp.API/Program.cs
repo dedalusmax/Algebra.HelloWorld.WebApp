@@ -18,9 +18,9 @@ var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connStr));
 
-//builder.Services.AddScoped<IMovieRepository, MovieRepository>();
+builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 //builder.Services.AddScoped<IGenericRepository<Movie>, MovieRepository>();
-builder.Services.AddScoped<IGenericRepository<Movie>, GenericRepository<Movie>>();
+//builder.Services.AddScoped<IGenericRepository<Movie>, GenericRepository<Movie>>();
 
 var app = builder.Build();
 
