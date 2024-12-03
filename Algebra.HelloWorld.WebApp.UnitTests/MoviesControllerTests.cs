@@ -1,31 +1,17 @@
-using Algebra.HelloWorld.WebApp.API.Controllers;
-using Algebra.HelloWorld.WebApp.Data;
 using Algebra.HelloWorld.WebApp.Data.Entities;
-using Algebra.HelloWorld.WebApp.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Algebra.HelloWorld.WebApp.UnitTests
 {
-    public class MoviesControllerTests
+    public class MoviesControllerTests(TestFixture fixture) : IClassFixture<TestFixture>
     {
-        private readonly MoviesController _controller;
-
-        public MoviesControllerTests()
-        {
-            // Arrange
-
-            var context = new AppDbContext();
-            var repository = new MovieRepository(context);
-            _controller = new MoviesController(repository);
-        }
-
         [Fact]
         public async void TestMoviesController_GetMovies_Ok()
         {
             // Arrange
 
             // Act 
-            var result = await _controller.GetMovies();
+            var result = await fixture.Controller.GetMovies();
 
             // Assert
             Assert.NotNull(result);
@@ -45,7 +31,7 @@ namespace Algebra.HelloWorld.WebApp.UnitTests
             // Arrange
 
             // Act 
-            var response = await _controller.GetMovie(id);
+            var response = await fixture.Controller.GetMovie(id);
 
             // Assert
             Assert.NotNull(response);
@@ -66,7 +52,7 @@ namespace Algebra.HelloWorld.WebApp.UnitTests
             // Arrange
 
             // Act 
-            var response = await _controller.GetMovie(id);
+            var response = await fixture.Controller.GetMovie(id);
 
             // Assert
             Assert.NotNull(response);
