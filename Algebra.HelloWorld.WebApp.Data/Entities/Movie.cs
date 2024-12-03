@@ -2,7 +2,7 @@
 
 namespace Algebra.HelloWorld.WebApp.Data.Entities;
 
-public class Movie
+public class Movie : IEntity
 {
     [Key]
     public int Id { get; set; }
